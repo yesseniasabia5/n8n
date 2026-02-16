@@ -1,0 +1,125 @@
+{
+  "name": "Data Worker",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -256,
+        0
+      ],
+      "id": "f2adf2a2-36dc-47be-a5ab-7330642916aa",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "sseEndpoint": "{{MCP_SSE_ENDPOINT_AZURE_APP}}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        240,
+        208
+      ],
+      "id": "726472bf-c2e9-44ab-a2ce-af5d70aefcf5",
+      "name": "MCP Azure App"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=\nConsulta en lenguaje natural:\n{{ $json.query }}\n",
+        "options": {
+          "systemMessage": "recibes una consulta y debes procesarla en la bbdd correspondiente generando la query indicada según el prompt en lenguaje natural recibido"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        -16,
+        0
+      ],
+      "id": "f4eeb973-dccf-47ab-8f6d-8ce7801cc891",
+      "name": "Data Worker",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAzureOpenAi",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        192
+      ],
+      "id": "7507b0d0-ed71-4e9d-931c-7c38844c967b",
+      "name": "Azure OpenAI Chat Model",
+      "credentials": {
+        "azureOpenAiApi": {
+          "id": "{{CRED_AZURE_OPENAI_ID}}",
+          "name": "Azure Open AI account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "query": "necesito ejecutar la siguiente query en snowflake SELECT * FROM DB_NARANJA_DATA_MODELS.DATA_ND.TB_NARANJAX_AR_MODELO_LEGALES_NARANJA_DIGITAL WHERE dni='30000000'"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Data Worker",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Azure App": {
+      "ai_tool": [
+        [
+          {
+            "node": "Data Worker",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Azure OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Data Worker",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "934b7293-0cb2-4804-a175-5645cf9802c8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "{{N8N_INSTANCE_ID}}"
+  },
+  "id": "{{WF_DATA_WORKER}}",
+  "tags": []
+}

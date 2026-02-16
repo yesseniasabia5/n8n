@@ -1,0 +1,137 @@
+{
+  "name": "Community Worker",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -400,
+        0
+      ],
+      "id": "624c6e2d-47f4-4661-b732-8f5c992aa37d",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=la instrucción es la siguiente: {{ $json.query }}",
+        "options": {
+          "systemMessage": "Eres un community manager.\nRecibirás instrucciones que deben ser interpretadas y solo en caso de solicitarse enviar mensajes debes extraer el mensaje a enviar eliminando cualquier tipo de comilla simple o doble y enviarlo. también puede que recibas solicitudes que no requieran enviar nada y sean solo consultas sobre usuarios"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        -48,
+        0
+      ],
+      "id": "6e924ea0-1ebe-4015-bf6a-e928675b61cd",
+      "name": "Community Worker"
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "{{SLACK_CHANNEL_ID}}",
+          "mode": "id"
+        },
+        "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message_Text', ``, 'string') }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slackTool",
+      "typeVersion": 2.3,
+      "position": [
+        208,
+        208
+      ],
+      "id": "59eb361e-39ff-4304-8a34-a03fb4c581d8",
+      "name": "Enviar mensaje Slack",
+      "webhookId": "{{WEBHOOK_SLACK_TOOL}}",
+      "credentials": {
+        "slackApi": {
+          "id": "{{CRED_SLACK_API_ID}}",
+          "name": "Slack account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAzureOpenAi",
+      "typeVersion": 1,
+      "position": [
+        -16,
+        224
+      ],
+      "id": "2895ec29-46ca-450a-b065-61b4b0aab3e6",
+      "name": "Azure OpenAI Chat Model",
+      "credentials": {
+        "azureOpenAiApi": {
+          "id": "{{CRED_AZURE_OPENAI_ID}}",
+          "name": "Azure Open AI account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "query": "enviar por slack el mensaje prueba mistral backup"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Community Worker",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar mensaje Slack": {
+      "ai_tool": [
+        [
+          {
+            "node": "Community Worker",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Azure OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Community Worker",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "6440e18a-827f-41b8-aa5d-b85d043c9579",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "{{N8N_INSTANCE_ID}}"
+  },
+  "id": "{{WF_COMMUNITY_WORKER}}",
+  "tags": []
+}

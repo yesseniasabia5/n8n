@@ -1,0 +1,310 @@
+{
+  "name": "Automation Supervisor",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -160,
+        944
+      ],
+      "id": "ccd7659d-39ca-4748-bdfb-e2bc1f144788",
+      "name": "Chat",
+      "webhookId": "{{WEBHOOK_CHAT_TRIGGER}}"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Solicitud del usuario:\n{{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "Eres un supervisor encargado de recibir una tarea y asignar uno o varios agentes, en secuencia si es necesario, para completarla. Cada consulta que formules a un agente debe ser siempre completa y autocontenida, de modo que el agente tenga toda la información necesaria para ejecutar su parte sin requerir aclaraciones adicionales."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        -16,
+        944
+      ],
+      "id": "bf29327e-a008-435a-a117-ddf57e31c980",
+      "name": "Automation Supervisor"
+    },
+    {
+      "parameters": {
+        "description": "Utiliza esta herramienta para enviar mensajes por slack o bien obtener perfiles de usuarios",
+        "workflowId": {
+          "__rl": true,
+          "value": "{{WF_COMMUNITY_WORKER}}",
+          "mode": "list",
+          "cachedResultName": "Community Worker"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        320,
+        1312
+      ],
+      "id": "a7f28814-9ec4-43aa-8650-e1522735b9b1",
+      "name": "Community Worker"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -48,
+        1104
+      ],
+      "id": "e051af5c-7949-48b3-964f-7fc67ed65b24",
+      "name": "Supervisor Memory"
+    },
+    {
+      "parameters": {
+        "description": "Utiliza esta herramienta para toda acción relacionada con jira como crear tickets,consultar,etc",
+        "workflowId": {
+          "__rl": true,
+          "value": "{{WF_SUPPORT_WORKER}}",
+          "mode": "list",
+          "cachedResultName": "Support Worker"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        192,
+        1312
+      ],
+      "id": "e1f6a071-2182-4e9a-aa21-3e3747b08f87",
+      "name": "Support Worker"
+    },
+    {
+      "parameters": {
+        "description": "Se encarga de procesar todos los requerimientos relacionados a bases de datos como por ejemplo procesar querys",
+        "workflowId": {
+          "__rl": true,
+          "value": "{{WF_DATA_WORKER}}",
+          "mode": "list",
+          "cachedResultName": "Data Worker"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        64,
+        1312
+      ],
+      "id": "fd74c22a-a1f6-41d3-bb95-ee43a427aae4",
+      "name": "Data Worker"
+    },
+    {
+      "parameters": {
+        "description": "se encarga de procesar todas las solicitudes referidas a manejo de archivos como por ejemplo google drive",
+        "workflowId": {
+          "__rl": true,
+          "value": "{{WF_FILE_WORKER}}",
+          "mode": "list",
+          "cachedResultName": "File Worker"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        -48,
+        1312
+      ],
+      "id": "aaadbdda-a753-4e21-8de9-0becb8fd4f80",
+      "name": "File Worker"
+    },
+    {
+      "parameters": {
+        "description": "Utiliza esta herramienta para consultar información sobre prestamos, movimientos (transacciones) de clientes. Asegúrate de enviar toda la instrucción del usuario",
+        "workflowId": {
+          "__rl": true,
+          "value": "{{WF_FINANCIAL_WORKER}}",
+          "mode": "list",
+          "cachedResultName": "DatosCliente"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        480,
+        1312
+      ],
+      "id": "da3cf863-e529-4dee-827d-f82da331d700",
+      "name": "Financial Worker"
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAzureOpenAi",
+      "typeVersion": 1,
+      "position": [
+        -208,
+        1104
+      ],
+      "id": "31292576-dce1-4d8c-99b6-5f710c2bf06d",
+      "name": "Azure OpenAI Chat Model",
+      "credentials": {
+        "azureOpenAiApi": {
+          "id": "{{CRED_AZURE_OPENAI_ID}}",
+          "name": "Azure Open AI account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Chat": {
+      "main": [
+        [
+          {
+            "node": "Automation Supervisor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Automation Supervisor": {
+      "main": [
+        []
+      ]
+    },
+    "Community Worker": {
+      "ai_tool": [
+        [
+          {
+            "node": "Automation Supervisor",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supervisor Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Automation Supervisor",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Support Worker": {
+      "ai_tool": [
+        [
+          {
+            "node": "Automation Supervisor",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Data Worker": {
+      "ai_tool": [
+        [
+          {
+            "node": "Automation Supervisor",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "File Worker": {
+      "ai_tool": [
+        [
+          {
+            "node": "Automation Supervisor",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Financial Worker": {
+      "ai_tool": [
+        [
+          {
+            "node": "Automation Supervisor",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Azure OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Automation Supervisor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "a0109859-2e12-49f5-8531-c8882dddf7f9",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "{{N8N_INSTANCE_ID}}"
+  },
+  "id": "{{SUPERVISOR_WORKFLOW_ID}}",
+  "tags": []
+}

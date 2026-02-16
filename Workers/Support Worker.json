@@ -1,0 +1,176 @@
+{
+  "name": "Support Worker",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -256,
+        -160
+      ],
+      "id": "dbe94215-b639-415f-ac3b-9612c2d04764",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "jiraVersion": "server",
+        "operation": "get",
+        "issueKey": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Issue_Key', ``, 'string') }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.jiraTool",
+      "typeVersion": 1,
+      "position": [
+        224,
+        64
+      ],
+      "id": "3b9201c6-9eb1-434c-afdc-894fcf517c51",
+      "name": "Jira Software",
+      "credentials": {
+        "jiraSoftwareServerApi": {
+          "id": "{{CRED_JIRA_API_ID}}",
+          "name": "Jira SW Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=La instrucción es la siguiente:\n{{ $json.query }}\n",
+        "options": {
+          "systemMessage": "Eres el manager de soporte, debes gestionar todas las incidencias de la empresa según tus tools disponibles"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        -16,
+        -160
+      ],
+      "id": "f71f4084-2bcf-4f0b-b2d1-c1c3cedd84c3",
+      "name": "Support Worker"
+    },
+    {
+      "parameters": {
+        "jiraVersion": "server",
+        "project": {
+          "__rl": true,
+          "value": "{{JIRA_PROJECT_ID}}",
+          "mode": "list",
+          "cachedResultName": "MSTA-Test"
+        },
+        "issueType": {
+          "__rl": true,
+          "value": "{{JIRA_ISSUE_TYPE_ID}}",
+          "mode": "list",
+          "cachedResultName": "Tarea"
+        },
+        "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Summary', ``, 'string') }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.jiraTool",
+      "typeVersion": 1,
+      "position": [
+        352,
+        64
+      ],
+      "id": "8bb75d66-a7c4-469c-b16b-545a298b55e5",
+      "name": "Jira Software1",
+      "credentials": {
+        "jiraSoftwareServerApi": {
+          "id": "{{CRED_JIRA_API_ID}}",
+          "name": "Jira SW Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAzureOpenAi",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        32
+      ],
+      "id": "c910936a-b4f3-42eb-b8f2-70b1e24bfbd2",
+      "name": "Azure OpenAI Chat Model",
+      "credentials": {
+        "azureOpenAiApi": {
+          "id": "{{CRED_AZURE_OPENAI_ID}}",
+          "name": "Azure Open AI account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "query": "necesito crear un ticket con titulo test y descripcion test también y el issue type Epic"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Support Worker",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Jira Software": {
+      "ai_tool": [
+        [
+          {
+            "node": "Support Worker",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Jira Software1": {
+      "ai_tool": [
+        [
+          {
+            "node": "Support Worker",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Azure OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Support Worker",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4f13d61c-b4dd-4c72-9a77-9b1f3dcb9b96",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "{{N8N_INSTANCE_ID}}"
+  },
+  "id": "{{WF_SUPPORT_WORKER}}",
+  "tags": []
+}

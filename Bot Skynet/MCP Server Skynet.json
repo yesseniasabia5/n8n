@@ -1,0 +1,245 @@
+{
+  "name": "MCP Server Skynet",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "{{AIRTABLE_BASE_ID}}",
+          "mode": "list",
+          "cachedResultName": "App Development Automation",
+          "cachedResultUrl": "https://airtable.com/{{AIRTABLE_BASE_ID}}"
+        },
+        "table": {
+          "__rl": true,
+          "value": "{{AIRTABLE_TABLE_ID}}",
+          "mode": "list",
+          "cachedResultName": "Automation Tasks",
+          "cachedResultUrl": "https://airtable.com/{{AIRTABLE_BASE_ID}}/{{AIRTABLE_TABLE_ID}}"
+        },
+        "options": {},
+        "sort": {
+          "property": [
+            {
+              "field": "Due Date"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.airtableTool",
+      "typeVersion": 2.1,
+      "position": [
+        288,
+        304
+      ],
+      "id": "a4968559-f809-4266-9470-9cfc37932802",
+      "name": "List_Users",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "{{CRED_AIRTABLE_TOKEN_ID}}",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        -48,
+        304
+      ],
+      "id": "066d57ad-9e4f-413d-a156-fd9c67a99f52",
+      "name": "Gmail",
+      "webhookId": "{{WEBHOOK_GMAIL_TOOL}}",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "{{CRED_GMAIL_OAUTH2_ID}}",
+          "name": "Gmail account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "{{AIRTABLE_BASE_ID}}",
+          "mode": "list",
+          "cachedResultName": "App Development Automation",
+          "cachedResultUrl": "https://airtable.com/{{AIRTABLE_BASE_ID}}"
+        },
+        "table": {
+          "__rl": true,
+          "value": "{{AIRTABLE_TABLE_ID}}",
+          "mode": "list",
+          "cachedResultName": "Automation Tasks",
+          "cachedResultUrl": "https://airtable.com/{{AIRTABLE_BASE_ID}}/{{AIRTABLE_TABLE_ID}}"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('id__using_to_match_', ``, 'string') }}",
+            "Task Name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Task_Name', ``, 'string') }}",
+            "Due Date": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Due_Date', ``, 'string') }}",
+            "Status": "={{ $fromAI(\"Status\") }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Task Name",
+              "displayName": "Task Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Due Date",
+              "displayName": "Due Date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Not Started",
+                  "value": "Not Started"
+                },
+                {
+                  "name": "In Progress",
+                  "value": "In Progress"
+                },
+                {
+                  "name": "Completed",
+                  "value": "Completed"
+                },
+                {
+                  "name": "completado",
+                  "value": "completado"
+                },
+                {
+                  "name": "completed",
+                  "value": "completed"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtableTool",
+      "typeVersion": 2.1,
+      "position": [
+        128,
+        304
+      ],
+      "id": "027bed26-3c63-4435-a90f-e08b585cb2cd",
+      "name": "Update_User",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "{{CRED_AIRTABLE_TOKEN_ID}}",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "path": "{{MCP_PATH_UUID}}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "71c8f923-1e65-4b91-b740-583ed3ac380e",
+      "name": "MCP Server Trigger",
+      "webhookId": "{{MCP_PATH_UUID}}"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update_User": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List_Users": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "21a276b1-6ce6-40cc-8057-aa964b59188a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "{{N8N_INSTANCE_ID}}"
+  },
+  "id": "{{SERVER_WORKFLOW_ID}}",
+  "tags": []
+}

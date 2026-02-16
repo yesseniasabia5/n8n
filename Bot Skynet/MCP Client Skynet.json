@@ -1,0 +1,629 @@
+{
+  "name": "MCP Client Skynet",
+  "nodes": [
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.msj_recibido }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        1024,
+        192
+      ],
+      "id": "582e34d0-91fb-41b5-b787-cd6f131939d3",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "sseEndpoint": "{{MCP_SSE_ENDPOINT}}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        1184,
+        192
+      ],
+      "id": "6bd8c56d-96c8-4902-bc8b-c3a0650229c3",
+      "name": "MCP Client"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "{{WHATSAPP_PHONE_NUMBER_ID}}",
+        "recipientPhoneNumber": "=+54{{ $json.tel_envio }}",
+        "textBody": "={{ $('AI Agent').item.json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        1472,
+        -48
+      ],
+      "id": "d39b2043-f36a-4952-9a10-fc0871019919",
+      "name": "Enviar Mensaje",
+      "webhookId": "{{WEBHOOK_WHATSAPP_SEND}}",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "{{CRED_WHATSAPP_API_ID}}",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        880,
+        192
+      ],
+      "id": "b287ff9d-b310-4255-b9a1-c4c814426434",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "{{CRED_OPENROUTER_API_ID}}",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "reset": false
+        }
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        688,
+        320
+      ],
+      "id": "29dcd8ca-c416-4441-b7dc-b01d90e486a4",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        880,
+        320
+      ],
+      "id": "bdb1832b-578b-41de-9034-6d588c04c2ff",
+      "name": "Wait",
+      "webhookId": "{{WEBHOOK_WAIT}}"
+    },
+    {
+      "parameters": {
+        "url": "=https://graph.facebook.com/v18.0/{{ $json.messages[0].audio.id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -528,
+        240
+      ],
+      "id": "75eadd1e-9359-4d13-b1bb-18763ae34881",
+      "name": "Descarga audio WhatsApp",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "{{CRED_BEARER_AUTH_ID}}",
+          "name": "Bearer Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "messages"
+        ],
+        "options": {
+          "messageStatusUpdates": [
+            "all"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.whatsAppTrigger",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        32
+      ],
+      "id": "016f0758-a192-4438-bf5f-77f0ce861648",
+      "name": "Msj Recibido",
+      "webhookId": "{{WEBHOOK_WHATSAPP_TRIGGER}}",
+      "credentials": {
+        "whatsAppTriggerApi": {
+          "id": "{{CRED_WHATSAPP_TRIGGER_ID}}",
+          "name": "WhatsApp OAuth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "40b41433-a375-46ea-bf05-afa1c67ff209",
+              "leftValue": "={{ $json.messages[0].type }}",
+              "rightValue": "text",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -256,
+        32
+      ],
+      "id": "90895422-3938-4273-8d19-cf6ab0202c16",
+      "name": "If es texto"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -368,
+        240
+      ],
+      "id": "6f65a9dd-e159-486a-917a-86727ecd389d",
+      "name": "Obtener archivo binario",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "{{CRED_BEARER_AUTH_ID}}",
+          "name": "Bearer Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.assemblyai.com/v2/upload",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -160,
+        240
+      ],
+      "id": "4b33a83f-9cf7-4b39-88a5-5204af6f961f",
+      "name": "Cargar audio AssemblyAI",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "{{CRED_ASSEMBLYAI_AUTH_ID}}",
+          "name": "Header Auth Assemblyai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.assemblyai.com/v2/transcript",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"audio_url\": \"{{ $json.upload_url }}\",\n  \"language_code\": \"es\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        64,
+        240
+      ],
+      "id": "2ccf33f6-28f2-43c6-8a9f-b7b75af542d2",
+      "name": "Crear transcripción",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "{{CRED_ASSEMBLYAI_AUTH_ID}}",
+          "name": "Header Auth Assemblyai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.assemblyai.com/v2/transcript/{{ $json.id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        288,
+        240
+      ],
+      "id": "b74043fb-a88b-4373-bb79-c9ab2791a306",
+      "name": "Obtener texto final",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "{{CRED_ASSEMBLYAI_AUTH_ID}}",
+          "name": "Header Auth Assemblyai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b5767cb0-d617-4003-8a36-e41d09f44af3",
+              "leftValue": "={{ $json.text }}",
+              "rightValue": "null",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        480,
+        240
+      ],
+      "id": "4ce76382-0ec2-42f2-bca4-dbd2f9c2baee",
+      "name": "If termino transcripción"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ff5d063b-f9d5-4dac-bccc-fe31085ab61d",
+              "name": "tel_envio",
+              "value": "={{ $('Msj Recibido').item.json.messages[0].from.replace(/^549/, '') }}\n",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1280,
+        -48
+      ],
+      "id": "0bcb6224-2c8c-426f-a76d-23c3f534dcf7",
+      "name": "Set Tel Envio"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7b3f55ed-d672-4b98-b138-294b4fe8076c",
+              "name": "msj_recibido",
+              "value": "={{ $json.messages[0].text.body }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "e39a5c23-dac8-4b48-874d-76f7c28e49d8",
+      "name": "Set Var Msj texto"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6307daac-0da6-4bcb-91f6-b7afa90f0c90",
+              "name": "msj_recibido",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        688,
+        144
+      ],
+      "id": "09808c42-7fc4-4848-82cd-a050e1279eab",
+      "name": "Set Var Msj audio"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.msj_recibido }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        912,
+        -48
+      ],
+      "id": "85d75b5c-3e8f-4b55-a2b1-811897a82372",
+      "name": "AI Agent"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Obtener texto final",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Descarga audio WhatsApp": {
+      "main": [
+        [
+          {
+            "node": "Obtener archivo binario",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Msj Recibido": {
+      "main": [
+        [
+          {
+            "node": "If es texto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If es texto": {
+      "main": [
+        [
+          {
+            "node": "Set Var Msj texto",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Descarga audio WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obtener archivo binario": {
+      "main": [
+        [
+          {
+            "node": "Cargar audio AssemblyAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cargar audio AssemblyAI": {
+      "main": [
+        [
+          {
+            "node": "Crear transcripción",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crear transcripción": {
+      "main": [
+        [
+          {
+            "node": "Obtener texto final",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obtener texto final": {
+      "main": [
+        [
+          {
+            "node": "If termino transcripción",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If termino transcripción": {
+      "main": [
+        [
+          {
+            "node": "Set Var Msj audio",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Tel Envio": {
+      "main": [
+        [
+          {
+            "node": "Enviar Mensaje",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Var Msj audio": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Client": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Set Tel Envio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Var Msj texto": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Mensaje": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "a9d80f0f-ae20-4926-aea2-1d8439375e49",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "{{N8N_INSTANCE_ID}}"
+  },
+  "id": "{{CLIENT_WORKFLOW_ID}}",
+  "tags": []
+}
