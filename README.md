@@ -3,9 +3,6 @@
 > Production-ready multi-agent automation systems built on n8n, integrating LLMs, WhatsApp, Jira, Google Drive and more through a custom MCP client/server architecture.
 
 ![n8n](https://img.shields.io/badge/n8n-workflow-orange?logo=n8n)
-![Python](https://img.shields.io/badge/Python-3.x-blue?logo=python)
-![Azure OpenAI](https://img.shields.io/badge/Azure-OpenAI-0078D4?logo=microsoft-azure)
-![LangChain](https://img.shields.io/badge/LangChain-agent-green)
 ![WhatsApp](https://img.shields.io/badge/WhatsApp-API-25D366?logo=whatsapp)
 ![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
@@ -14,7 +11,6 @@
 ## 📁 Projects
 
 - [Bot Skyner](#-bot-skyner) — WhatsApp AI assistant with voice transcription and LLM agent
-- [Workers](#-workers) — Multi-agent supervisor system with Slack, Jira, Drive and database integrations
 
 ---
 
@@ -34,9 +30,9 @@ I needed a WhatsApp-native AI assistant that could handle both text and voice me
 - Uses a custom **MCP (client/server) over SSE** for real-time inter-workflow communication
 
 ### Screenshot
-![Bot Skyner Client workflow](img/Screenshot_client.png)
+![Bot Skyner Client workflow](bot_skynet/img/Screenshot_client.png)
 
-![Bot Skyner Server workflow](img/Screenshot_server.png)
+![Bot Skyner Server workflow](bot_skynet/img/Screenshot_server.png)
 
 ### Architecture
 
